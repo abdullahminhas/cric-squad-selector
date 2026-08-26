@@ -9,11 +9,12 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-i
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cric.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
-from models import User  # noqa: E402
+from models import db, User  # noqa: E402
+db.init_app(app)
+
 from auth import auth as auth_blueprint  # noqa: E402
 
 app.register_blueprint(auth_blueprint)
