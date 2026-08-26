@@ -5,17 +5,20 @@ from flask_login import LoginManager
 
 app = Flask(__name__)
 
-# Secret key for session signing
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
-
-# SQLite database stored in the instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cric.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Initialize extensions
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+
+from models import User  # noqa: E402
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 @app.route("/")
@@ -24,4 +27,5 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)
+
