@@ -2,17 +2,37 @@ import os
 import joblib
 import logging
 
+import pandas as pd
+
 # Configure basic logging for the ML module
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Global variables to hold models in memory
+# Global variables to hold models and data in memory
 model_rf = None
 model_xgb = None
 ensemble_weight = None
 feature_cols = None
 max_runs_dict = None
+df = None
 
+def load_data():
+    """
+    Load the master dataset into memory.
+    """
+    global df
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    data_path = os.path.join(base_dir, "data", "master_player_match_features.csv")
+    
+    try:
+        # Load the CSV. For date filtering later, ensure date column is datetime
+        df = pd.read_csv(data_path)
+        if "date" in df.columns:
+            df["date"] = pd.to_datetime(df["date"])
+        logger.info(f"Successfully loaded dataset with {len(df)} rows.")
+    except Exception as e:
+        logger.error(f"Failed to load dataset: {e}")
+        raise
 
 def load_models():
     """
@@ -35,8 +55,9 @@ def load_models():
         logger.error(f"Failed to load ML models: {e}")
         raise
 
-# Auto-load models when this module is imported
+# Auto-load models and data when this module is imported
 load_models()
+load_data()
 
 def classify_role(row):
     """
