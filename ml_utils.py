@@ -1,8 +1,8 @@
 import os
 import joblib
 import logging
-
 import pandas as pd
+import numpy as np
 
 # Configure basic logging for the ML module
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -55,9 +55,7 @@ def load_models():
         logger.error(f"Failed to load ML models: {e}")
         raise
 
-# Auto-load models and data when this module is imported
-load_models()
-load_data()
+
 
 def classify_role(row):
     """
@@ -77,8 +75,73 @@ def classify_role(row):
     else:
         return "Batsman"
 
-def generate_squad(format_filter, opposition_filter):
+def suggest_squad(format_filter, opposition_filter, top_n=200):
+    global df, model_rf, model_xgb, ensemble_weight, feature_cols, max_runs_dict
+
+    # Filter out old matches - active within last 730 days
+    cutoff_date = df["date"].max() - pd.Timedelta(days=730)
+    active_players = df[df["date"] >= cutoff_date]["player_id"].unique()
+
+    relevant_matches = df[
+        (df["format"] == format_filter) &
+        (df["opposition"] == opposition_filter) &
+        (df["player_id"].isin(active_players))
+    ]
+
+    latest_snapshot = relevant_matches.sort_values("date").groupby("player_id").tail(1).copy()
+
+    if latest_snapshot.empty:
+        logger.warning(f"No recent matches found for format={format_filter}, opposition={opposition_filter}")
+        return pd.DataFrame()
+
+    latest_snapshot_encoded = pd.get_dummies(latest_snapshot, columns=["team", "opposition", "format"], drop_first=True)
+    encoded_cols = {col: 0 for col in feature_cols if col not in latest_snapshot_encoded.columns}
+    if encoded_cols:
+        latest_snapshot_encoded = pd.concat([latest_snapshot_encoded, pd.DataFrame(encoded_cols, index=latest_snapshot_encoded.index)], axis=1)
+
+    X_latest = latest_snapshot_encoded[feature_cols].replace([np.inf, -np.inf], 0).fillna(0)
+
+    pred_rf = model_rf.predict(X_latest)
+    pred_xgb = model_xgb.predict(X_latest)
+    pred_final = ensemble_weight * pred_rf + (1 - ensemble_weight) * pred_xgb
+
+    latest_snapshot["predicted_runs"] = pred_final
+    cap = max_runs_dict.get(format_filter, 150)
+    latest_snapshot["predicted_runs_capped"] = latest_snapshot["predicted_runs"].clip(upper=cap)
+
+    result = latest_snapshot[[
+        "player_name", "team", "avg_vs_opposition", "predicted_runs_capped",
+        "career_batting_avg", "career_bowling_avg", "wickets_last10"
+    ]]
+
+    return result.sort_values("predicted_runs_capped", ascending=False).head(top_n)
+
+
+def generate_squad(format_filter, opposition_filter, num_batsmen=5, num_bowlers=4, num_allrounders=2):
     """
     Generate the 11-man squad using the trained models and constraints.
     """
-    pass
+    candidates = suggest_squad(format_filter, opposition_filter, top_n=200)
+
+    if candidates.empty:
+        return []
+
+    candidates["role"] = candidates.apply(classify_role, axis=1)
+
+    batsmen = candidates[candidates["role"] == "Batsman"].head(num_batsmen)
+    bowlers = candidates[candidates["role"] == "Bowler"].head(num_bowlers)
+    allrounders = candidates[candidates["role"] == "All-rounder"].head(num_allrounders)
+
+    squad = pd.concat([batsmen, bowlers, allrounders]).reset_index(drop=True)
+    squad["captain"] = ""
+    if len(squad) > 0:
+        squad.loc[0, "captain"] = "Captain"
+    if len(squad) > 1:
+        squad.loc[1, "captain"] = "Vice-Captain"
+
+    return squad[["player_name", "team", "role", "captain", "predicted_runs_capped"]].to_dict(orient="records")
+
+# Auto-load models and data when this module is imported
+load_models()
+load_data()
+
