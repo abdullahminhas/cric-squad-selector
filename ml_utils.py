@@ -63,7 +63,19 @@ def classify_role(row):
     """
     Classify a player as Batsman, Bowler, or All-rounder based on career statistics.
     """
-    pass
+    batting_avg = row.get("career_batting_avg", 0)
+    bowling_avg = row.get("career_bowling_avg", 0)
+    wickets_last10 = row.get("wickets_last10", 0)
+
+    is_genuine_bowler = (bowling_avg > 0) and (wickets_last10 > 0)
+    is_genuine_batsman = batting_avg >= 20
+
+    if is_genuine_bowler and is_genuine_batsman:
+        return "All-rounder"
+    elif is_genuine_bowler:
+        return "Bowler"
+    else:
+        return "Batsman"
 
 def generate_squad(format_filter, opposition_filter):
     """
