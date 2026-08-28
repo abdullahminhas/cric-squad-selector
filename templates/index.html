@@ -3,7 +3,7 @@
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Squad Selector</h1>
-    <p class="page-subtitle">Choose a match format, your team, and the opposition to generate the optimal 11-man squad using our ML ensemble model.</p>
+    <p class="page-subtitle">Select a match format, your team, and the opposition to generate the optimal 11-man squad.</p>
 </div>
 
 <div class="form-card card">
@@ -21,97 +21,25 @@
 
             <div class="form-group">
                 <label for="team" class="form-label">Your Team</label>
-                <select id="team" name="team" class="form-select" required>
-                    <option value="" disabled selected>Select team</option>
-                    <option>Africa XI</option><option>Argentina</option><option>Asia XI</option>
-                    <option>Australia</option><option>Austria</option><option>Bahamas</option>
-                    <option>Bahrain</option><option>Bangladesh</option><option>Belgium</option>
-                    <option>Belize</option><option>Bermuda</option><option>Bhutan</option>
-                    <option>Botswana</option><option>Brazil</option><option>Bulgaria</option>
-                    <option>Cambodia</option><option>Cameroon</option><option>Canada</option>
-                    <option>Cayman Islands</option><option>Chile</option><option>China</option>
-                    <option>Cook Islands</option><option>Costa Rica</option><option>Croatia</option>
-                    <option>Cyprus</option><option>Czech Republic</option><option>Denmark</option>
-                    <option>England</option><option>Estonia</option><option>Eswatini</option>
-                    <option>Fiji</option><option>Finland</option><option>France</option>
-                    <option>Gambia</option><option>Germany</option><option>Ghana</option>
-                    <option>Gibraltar</option><option>Greece</option><option>Guernsey</option>
-                    <option>Hong Kong</option><option>Hungary</option><option>ICC World XI</option>
-                    <option>India</option><option>Indonesia</option><option>Iran</option>
-                    <option>Ireland</option><option>Isle of Man</option><option>Israel</option>
-                    <option>Italy</option><option>Ivory Coast</option><option>Japan</option>
-                    <option>Jersey</option><option>Kenya</option><option>Kuwait</option>
-                    <option>Lesotho</option><option>Luxembourg</option><option>Malawi</option>
-                    <option>Malaysia</option><option>Maldives</option><option>Mali</option>
-                    <option>Malta</option><option>Mexico</option><option>Mongolia</option>
-                    <option>Mozambique</option><option>Myanmar</option><option>Namibia</option>
-                    <option>Nepal</option><option>Netherlands</option><option>New Zealand</option>
-                    <option>Nigeria</option><option>Norway</option><option>Oman</option>
-                    <option>Pakistan</option><option>Panama</option><option>Papua New Guinea</option>
-                    <option>Peru</option><option>Philippines</option><option>Portugal</option>
-                    <option>Qatar</option><option>Romania</option><option>Rwanda</option>
-                    <option>Samoa</option><option>Saudi Arabia</option><option>Scotland</option>
-                    <option>Serbia</option><option>Seychelles</option><option>Sierra Leone</option>
-                    <option>Singapore</option><option>Slovenia</option><option>South Africa</option>
-                    <option>South Korea</option><option>Spain</option><option>Sri Lanka</option>
-                    <option>St Helena</option><option>Suriname</option><option>Swaziland</option>
-                    <option>Sweden</option><option>Switzerland</option><option>Tanzania</option>
-                    <option>Thailand</option><option>Timor-Leste</option><option>Turkey</option>
-                    <option>Turks and Caicos Island</option><option>Uganda</option>
-                    <option>United Arab Emirates</option><option>United States of America</option>
-                    <option>Uzbekistan</option><option>Vanuatu</option><option>West Indies</option>
-                    <option>Zambia</option><option>Zimbabwe</option>
+                <select id="team" name="team" class="form-select" required disabled>
+                    <option value="" disabled selected>Select format first</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="opposition" class="form-label">Opposition</label>
-                <select id="opposition" name="opposition" class="form-select" required>
-                    <option value="" disabled selected>Select opposition</option>
-                    <option>Africa XI</option><option>Argentina</option><option>Asia XI</option>
-                    <option>Australia</option><option>Austria</option><option>Bahamas</option>
-                    <option>Bahrain</option><option>Bangladesh</option><option>Belgium</option>
-                    <option>Belize</option><option>Bermuda</option><option>Bhutan</option>
-                    <option>Botswana</option><option>Brazil</option><option>Bulgaria</option>
-                    <option>Cambodia</option><option>Cameroon</option><option>Canada</option>
-                    <option>Cayman Islands</option><option>Chile</option><option>China</option>
-                    <option>Cook Islands</option><option>Costa Rica</option><option>Croatia</option>
-                    <option>Cyprus</option><option>Czech Republic</option><option>Denmark</option>
-                    <option>England</option><option>Estonia</option><option>Eswatini</option>
-                    <option>Fiji</option><option>Finland</option><option>France</option>
-                    <option>Gambia</option><option>Germany</option><option>Ghana</option>
-                    <option>Gibraltar</option><option>Greece</option><option>Guernsey</option>
-                    <option>Hong Kong</option><option>Hungary</option><option>ICC World XI</option>
-                    <option>India</option><option>Indonesia</option><option>Iran</option>
-                    <option>Ireland</option><option>Isle of Man</option><option>Israel</option>
-                    <option>Italy</option><option>Ivory Coast</option><option>Japan</option>
-                    <option>Jersey</option><option>Kenya</option><option>Kuwait</option>
-                    <option>Lesotho</option><option>Luxembourg</option><option>Malawi</option>
-                    <option>Malaysia</option><option>Maldives</option><option>Mali</option>
-                    <option>Malta</option><option>Mexico</option><option>Mongolia</option>
-                    <option>Mozambique</option><option>Myanmar</option><option>Namibia</option>
-                    <option>Nepal</option><option>Netherlands</option><option>New Zealand</option>
-                    <option>Nigeria</option><option>Norway</option><option>Oman</option>
-                    <option>Pakistan</option><option>Panama</option><option>Papua New Guinea</option>
-                    <option>Peru</option><option>Philippines</option><option>Portugal</option>
-                    <option>Qatar</option><option>Romania</option><option>Rwanda</option>
-                    <option>Samoa</option><option>Saudi Arabia</option><option>Scotland</option>
-                    <option>Serbia</option><option>Seychelles</option><option>Sierra Leone</option>
-                    <option>Singapore</option><option>Slovenia</option><option>South Africa</option>
-                    <option>South Korea</option><option>Spain</option><option>Sri Lanka</option>
-                    <option>St Helena</option><option>Suriname</option><option>Swaziland</option>
-                    <option>Sweden</option><option>Switzerland</option><option>Tanzania</option>
-                    <option>Thailand</option><option>Timor-Leste</option><option>Turkey</option>
-                    <option>Turks and Caicos Island</option><option>Uganda</option>
-                    <option>United Arab Emirates</option><option>United States of America</option>
-                    <option>Uzbekistan</option><option>Vanuatu</option><option>West Indies</option>
-                    <option>Zambia</option><option>Zimbabwe</option>
+                <select id="opposition" name="opposition" class="form-select" required disabled>
+                    <option value="" disabled selected>Select your team first</option>
                 </select>
             </div>
         </div>
 
+        <div class="same-team-warning hidden" id="same-team-warning">
+            ⚠️ A team cannot play against itself. Please select a different opposition.
+        </div>
+
         <div class="form-actions">
-            <button type="submit" class="btn-primary" id="generate-btn">
+            <button type="submit" class="btn-primary" id="generate-btn" disabled>
                 Generate Squad
             </button>
         </div>

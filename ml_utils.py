@@ -75,7 +75,7 @@ def classify_role(row):
     else:
         return "Batsman"
 
-def suggest_squad(format_filter, opposition_filter, top_n=200):
+def suggest_squad(format_filter, opposition_filter, team_filter=None, top_n=200):
     global df, model_rf, model_xgb, ensemble_weight, feature_cols, max_runs_dict
 
     # Filter out old matches - active within last 730 days
@@ -92,6 +92,11 @@ def suggest_squad(format_filter, opposition_filter, top_n=200):
     if latest_snapshot.empty:
         logger.warning(f"No recent matches found for format={format_filter}")
         return pd.DataFrame()
+        
+    if team_filter:
+        latest_snapshot = latest_snapshot[latest_snapshot["team"] == team_filter]
+        if latest_snapshot.empty:
+            return pd.DataFrame()
 
     # Override opposition to the requested one
     latest_snapshot["opposition"] = opposition_filter
@@ -143,12 +148,12 @@ def generate_squad(format_filter, opposition_filter, team_filter=None, num_batsm
     Generate the 11-man squad using the trained models and constraints.
     Optionally filter by team to only pick players from a specific side.
     """
-    candidates = suggest_squad(format_filter, opposition_filter, top_n=500)
+    candidates = suggest_squad(format_filter, opposition_filter, team_filter=team_filter, top_n=500)
 
     if candidates.empty:
         return []
 
-    # If a specific team is requested, filter candidates to that team
+    # If a specific team is requested, we already filtered it in suggest_squad, but we can keep this for safety
     if team_filter:
         candidates = candidates[candidates["team"] == team_filter]
         if candidates.empty:

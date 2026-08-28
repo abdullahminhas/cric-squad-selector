@@ -1,4 +1,75 @@
-// Squad generation form — handles API call, loading state, and renders results
+// ─── Eligible Teams Per Format ────────────────────────────────────────────────
+// Only countries with ≥11 active players in that format are included.
+const ELIGIBLE_TEAMS = {
+    T20:  ['Australia', 'Bangladesh', 'England', 'India', 'Ireland', 'New Zealand',
+           'Pakistan', 'South Africa', 'Sri Lanka', 'West Indies', 'Zimbabwe'],
+    ODI:  ['Australia', 'Bangladesh', 'Canada', 'England', 'India', 'Ireland',
+           'Jersey', 'Namibia', 'Nepal', 'Netherlands', 'New Zealand', 'Oman',
+           'Pakistan', 'Papua New Guinea', 'Scotland', 'South Africa', 'Sri Lanka',
+           'United Arab Emirates', 'United States of America', 'West Indies', 'Zimbabwe'],
+    Test: ['Australia', 'Bangladesh', 'England', 'India', 'Ireland', 'New Zealand',
+           'Pakistan', 'South Africa', 'Sri Lanka', 'West Indies', 'Zimbabwe']
+};
+
+// ─── Populate dropdowns dynamically ──────────────────────────────────────────
+const formatEl   = document.getElementById('format');
+const teamEl     = document.getElementById('team');
+const opposEl    = document.getElementById('opposition');
+const genBtn     = document.getElementById('generate-btn');
+const warnEl     = document.getElementById('same-team-warning');
+
+function populateSelect(selectEl, teams, placeholder) {
+    selectEl.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
+    teams.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        selectEl.appendChild(opt);
+    });
+}
+
+formatEl.addEventListener('change', () => {
+    const format = formatEl.value;
+    const teams  = ELIGIBLE_TEAMS[format] || [];
+
+    // Reset & enable team dropdown
+    populateSelect(teamEl, teams, 'Select your team');
+    teamEl.value    = '';
+    teamEl.disabled = false;
+
+    // Reset & disable opposition
+    populateSelect(opposEl, [], 'Select your team first');
+    opposEl.value    = '';
+    opposEl.disabled = true;
+
+    warnEl.classList.add('hidden');
+    genBtn.disabled = true;
+});
+
+teamEl.addEventListener('change', () => {
+    const format   = formatEl.value;
+    const selected = teamEl.value;
+    const teams    = (ELIGIBLE_TEAMS[format] || []).filter(t => t !== selected);
+
+    populateSelect(opposEl, teams, 'Select opposition');
+    opposEl.value    = '';
+    opposEl.disabled = false;
+
+    warnEl.classList.add('hidden');
+    genBtn.disabled = true;
+});
+
+opposEl.addEventListener('change', () => {
+    if (opposEl.value === teamEl.value) {
+        warnEl.classList.remove('hidden');
+        genBtn.disabled = true;
+    } else {
+        warnEl.classList.add('hidden');
+        genBtn.disabled = false;
+    }
+});
+
+// ─── Squad generation form submission ─────────────────────────────────────────
 
 document.getElementById('squad-form').addEventListener('submit', async function (e) {
     e.preventDefault();
