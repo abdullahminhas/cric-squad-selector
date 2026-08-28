@@ -1,79 +1,156 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cric Squad Selector</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: #e2e8f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-      }
-      .card {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid #334155;
-        border-radius: 16px;
-        padding: 40px 50px;
-        max-width: 600px;
-        text-align: center;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-      }
-      h1 {
-        margin-bottom: 16px;
-        font-size: 2.2rem;
-      }
-      p {
-        margin: 0;
-        font-size: 1.05rem;
-        color: #cbd5e1;
-        line-height: 1.6;
-      }
-      .meta {
-        display: inline-block;
-        margin-top: 18px;
-        margin-bottom: 24px;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: rgba(250, 204, 21, 0.12);
-        border: 1px solid rgba(250, 204, 21, 0.4);
-        color: #fcd34d;
-        font-size: 0.8rem;
-        font-weight: bold;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      .cta {
-        display: inline-block;
-        margin-top: 12px;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #facc15, #f59e0b);
-        color: #111827;
-        font-size: 1rem;
-        font-weight: bold;
-        text-decoration: none;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <h1>Cric Squad Selector</h1>
-      <p>
-        A smart cricket team selector built around player data, match
-        performance, and squad strategy.
-      </p>
-      <div class="meta">Data-driven cricket strategy</div>
-      <div>
-        <a class="cta" href="#">Start selecting squad</a>
-      </div>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Squad Selector</h1>
+    <p class="page-subtitle">Select a match format and opposition to generate the optimal 11-man squad using our ML ensemble model.</p>
+</div>
+
+<div class="form-card card">
+    <form id="squad-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="format" class="form-label">Match Format</label>
+                <select id="format" name="format" class="form-select" required>
+                    <option value="" disabled selected>Select format</option>
+                    <option value="T20">T20</option>
+                    <option value="ODI">ODI</option>
+                    <option value="Test">Test</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="opposition" class="form-label">Opposition</label>
+                <select id="opposition" name="opposition" class="form-select" required>
+                    <option value="" disabled selected>Select opposition</option>
+                    <option>Africa XI</option>
+                    <option>Argentina</option>
+                    <option>Asia XI</option>
+                    <option>Australia</option>
+                    <option>Austria</option>
+                    <option>Bahamas</option>
+                    <option>Bahrain</option>
+                    <option>Bangladesh</option>
+                    <option>Belgium</option>
+                    <option>Belize</option>
+                    <option>Bermuda</option>
+                    <option>Bhutan</option>
+                    <option>Botswana</option>
+                    <option>Brazil</option>
+                    <option>Bulgaria</option>
+                    <option>Cambodia</option>
+                    <option>Cameroon</option>
+                    <option>Canada</option>
+                    <option>Cayman Islands</option>
+                    <option>Chile</option>
+                    <option>China</option>
+                    <option>Cook Islands</option>
+                    <option>Costa Rica</option>
+                    <option>Croatia</option>
+                    <option>Cyprus</option>
+                    <option>Czech Republic</option>
+                    <option>Denmark</option>
+                    <option>England</option>
+                    <option>Estonia</option>
+                    <option>Eswatini</option>
+                    <option>Fiji</option>
+                    <option>Finland</option>
+                    <option>France</option>
+                    <option>Gambia</option>
+                    <option>Germany</option>
+                    <option>Ghana</option>
+                    <option>Gibraltar</option>
+                    <option>Greece</option>
+                    <option>Guernsey</option>
+                    <option>Hong Kong</option>
+                    <option>Hungary</option>
+                    <option>ICC World XI</option>
+                    <option>India</option>
+                    <option>Indonesia</option>
+                    <option>Iran</option>
+                    <option>Ireland</option>
+                    <option>Isle of Man</option>
+                    <option>Israel</option>
+                    <option>Italy</option>
+                    <option>Ivory Coast</option>
+                    <option>Japan</option>
+                    <option>Jersey</option>
+                    <option>Kenya</option>
+                    <option>Kuwait</option>
+                    <option>Lesotho</option>
+                    <option>Luxembourg</option>
+                    <option>Malawi</option>
+                    <option>Malaysia</option>
+                    <option>Maldives</option>
+                    <option>Mali</option>
+                    <option>Malta</option>
+                    <option>Mexico</option>
+                    <option>Mongolia</option>
+                    <option>Mozambique</option>
+                    <option>Myanmar</option>
+                    <option>Namibia</option>
+                    <option>Nepal</option>
+                    <option>Netherlands</option>
+                    <option>New Zealand</option>
+                    <option>Nigeria</option>
+                    <option>Norway</option>
+                    <option>Oman</option>
+                    <option>Pakistan</option>
+                    <option>Panama</option>
+                    <option>Papua New Guinea</option>
+                    <option>Peru</option>
+                    <option>Philippines</option>
+                    <option>Portugal</option>
+                    <option>Qatar</option>
+                    <option>Romania</option>
+                    <option>Rwanda</option>
+                    <option>Samoa</option>
+                    <option>Saudi Arabia</option>
+                    <option>Scotland</option>
+                    <option>Serbia</option>
+                    <option>Seychelles</option>
+                    <option>Sierra Leone</option>
+                    <option>Singapore</option>
+                    <option>Slovenia</option>
+                    <option>South Africa</option>
+                    <option>South Korea</option>
+                    <option>Spain</option>
+                    <option>Sri Lanka</option>
+                    <option>St Helena</option>
+                    <option>Suriname</option>
+                    <option>Swaziland</option>
+                    <option>Sweden</option>
+                    <option>Switzerland</option>
+                    <option>Tanzania</option>
+                    <option>Thailand</option>
+                    <option>Timor-Leste</option>
+                    <option>Turkey</option>
+                    <option>Turks and Caicos Island</option>
+                    <option>Uganda</option>
+                    <option>United Arab Emirates</option>
+                    <option>United States of America</option>
+                    <option>Uzbekistan</option>
+                    <option>Vanuatu</option>
+                    <option>West Indies</option>
+                    <option>Zambia</option>
+                    <option>Zimbabwe</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary" id="generate-btn">
+                Generate Squad
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Results area (populated by JS) -->
+<div id="results-section" class="results-hidden">
+    <div class="results-header">
+        <h2 class="results-title" id="results-title"></h2>
     </div>
-  </body>
-</html>
+    <div id="results-container"></div>
+</div>
+{% endblock %}
