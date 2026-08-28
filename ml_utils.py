@@ -82,17 +82,36 @@ def suggest_squad(format_filter, opposition_filter, top_n=200):
     cutoff_date = df["date"].max() - pd.Timedelta(days=730)
     active_players = df[df["date"] >= cutoff_date]["player_id"].unique()
 
+    # Get latest match for every active player in this format (regardless of opposition)
     relevant_matches = df[
         (df["format"] == format_filter) &
-        (df["opposition"] == opposition_filter) &
         (df["player_id"].isin(active_players))
     ]
-
     latest_snapshot = relevant_matches.sort_values("date").groupby("player_id").tail(1).copy()
 
     if latest_snapshot.empty:
-        logger.warning(f"No recent matches found for format={format_filter}, opposition={opposition_filter}")
+        logger.warning(f"No recent matches found for format={format_filter}")
         return pd.DataFrame()
+
+    # Override opposition to the requested one
+    latest_snapshot["opposition"] = opposition_filter
+
+    # Find the most recent match for each player against THIS opposition
+    opp_matches = df[
+        (df["format"] == format_filter) &
+        (df["opposition"] == opposition_filter)
+    ].sort_values("date").groupby("player_id").tail(1)
+
+    # Fix the opposition-specific stats (if they haven't played them, it defaults to 0)
+    latest_snapshot = latest_snapshot.set_index("player_id")
+    opp_matches = opp_matches.set_index("player_id")
+
+    opp_cols = ["avg_vs_opposition", "strike_rate_vs_opposition", "bowling_avg_vs_opposition", "economy_vs_opposition", "matches_vs_opposition"]
+    for col in opp_cols:
+        if col in latest_snapshot.columns:
+            latest_snapshot[col] = latest_snapshot.index.map(opp_matches[col]).fillna(0)
+            
+    latest_snapshot = latest_snapshot.reset_index()
 
     latest_snapshot_encoded = pd.get_dummies(latest_snapshot, columns=["team", "opposition", "format"], drop_first=True)
     encoded_cols = {col: 0 for col in feature_cols if col not in latest_snapshot_encoded.columns}
@@ -107,7 +126,7 @@ def suggest_squad(format_filter, opposition_filter, top_n=200):
 
     latest_snapshot["predicted_runs"] = pred_final
     cap = max_runs_dict.get(format_filter, 150)
-    latest_snapshot["predicted_runs_capped"] = latest_snapshot["predicted_runs"].clip(upper=cap)
+    latest_snapshot["predicted_runs_capped"] = latest_snapshot["predicted_runs"].clip(lower=0, upper=cap)
 
     result = latest_snapshot[[
         "player_name", "team", "avg_vs_opposition", "predicted_runs_capped",
@@ -138,12 +157,27 @@ def generate_squad(format_filter, opposition_filter, team_filter=None, num_batsm
     candidates = candidates.copy()
     candidates["role"] = candidates.apply(classify_role, axis=1)
 
-    # Normalize predicted score into a 0-100 selection probability
-    max_score = candidates["predicted_runs_capped"].max()
-    if max_score > 0:
-        candidates["selection_probability"] = (candidates["predicted_runs_capped"] / max_score * 100).round(1)
-    else:
-        candidates["selection_probability"] = 0
+    # Calculate a composite impact score for selection probability
+    # (Since the ML model predicts batting runs, bowlers need a composite score to show a fair probability)
+    candidates["impact_score"] = candidates["predicted_runs_capped"]
+    
+    bowler_mask = candidates["role"] == "Bowler"
+    candidates.loc[bowler_mask, "impact_score"] = (
+        candidates.loc[bowler_mask, "wickets_last10"] * 15 + 
+        (100 / (candidates.loc[bowler_mask, "career_economy"] + 0.1)) * 3
+    )
+
+    # Normalize impact score into a 0-100 selection probability PER ROLE
+    candidates["selection_probability"] = 0.0
+    for role in ["Batsman", "Bowler", "All-rounder"]:
+        role_mask = candidates["role"] == role
+        max_score = candidates.loc[role_mask, "impact_score"].max()
+        if max_score > 0:
+            candidates.loc[role_mask, "selection_probability"] = (
+                candidates.loc[role_mask, "impact_score"] / max_score * 100
+            ).clip(lower=10, upper=99).round(1)
+        else:
+            candidates.loc[role_mask, "selection_probability"] = 50.0
 
     batsmen = candidates[candidates["role"] == "Batsman"].head(num_batsmen)
     bowlers = candidates[candidates["role"] == "Bowler"].head(num_bowlers)
