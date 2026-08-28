@@ -111,22 +111,39 @@ def suggest_squad(format_filter, opposition_filter, top_n=200):
 
     result = latest_snapshot[[
         "player_name", "team", "avg_vs_opposition", "predicted_runs_capped",
-        "career_batting_avg", "career_bowling_avg", "wickets_last10"
+        "career_batting_avg", "career_bowling_avg", "career_economy",
+        "career_strike_rate", "runs_last5", "runs_last10",
+        "wickets_last5", "wickets_last10", "economy_last5", "economy_last10"
     ]]
 
     return result.sort_values("predicted_runs_capped", ascending=False).head(top_n)
 
 
-def generate_squad(format_filter, opposition_filter, num_batsmen=5, num_bowlers=4, num_allrounders=2):
+def generate_squad(format_filter, opposition_filter, team_filter=None, num_batsmen=5, num_bowlers=4, num_allrounders=2):
     """
     Generate the 11-man squad using the trained models and constraints.
+    Optionally filter by team to only pick players from a specific side.
     """
-    candidates = suggest_squad(format_filter, opposition_filter, top_n=200)
+    candidates = suggest_squad(format_filter, opposition_filter, top_n=500)
 
     if candidates.empty:
         return []
 
+    # If a specific team is requested, filter candidates to that team
+    if team_filter:
+        candidates = candidates[candidates["team"] == team_filter]
+        if candidates.empty:
+            return []
+
+    candidates = candidates.copy()
     candidates["role"] = candidates.apply(classify_role, axis=1)
+
+    # Normalize predicted score into a 0-100 selection probability
+    max_score = candidates["predicted_runs_capped"].max()
+    if max_score > 0:
+        candidates["selection_probability"] = (candidates["predicted_runs_capped"] / max_score * 100).round(1)
+    else:
+        candidates["selection_probability"] = 0
 
     batsmen = candidates[candidates["role"] == "Batsman"].head(num_batsmen)
     bowlers = candidates[candidates["role"] == "Bowler"].head(num_bowlers)
@@ -139,7 +156,14 @@ def generate_squad(format_filter, opposition_filter, num_batsmen=5, num_bowlers=
     if len(squad) > 1:
         squad.loc[1, "captain"] = "Vice-Captain"
 
-    return squad[["player_name", "team", "role", "captain", "predicted_runs_capped"]].to_dict(orient="records")
+    cols = [
+        "player_name", "team", "role", "captain", "predicted_runs_capped",
+        "selection_probability", "avg_vs_opposition",
+        "runs_last5", "runs_last10", "wickets_last5", "wickets_last10",
+        "economy_last5", "economy_last10", "career_batting_avg",
+        "career_bowling_avg", "career_economy", "career_strike_rate"
+    ]
+    return squad[cols].fillna(0).round(2).to_dict(orient="records")
 
 # Auto-load models and data when this module is imported
 load_models()

@@ -17,6 +17,7 @@ db.init_app(app)
 
 from auth import auth as auth_blueprint  # noqa: E402
 from squad_api import squad_bp  # noqa: E402
+import ml_utils  # noqa: E402 - triggers model and data loading on startup
 
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(squad_bp)
