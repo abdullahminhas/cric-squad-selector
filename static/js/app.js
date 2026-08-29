@@ -180,7 +180,9 @@ function renderPlayerCard(p, format) {
     <div class="player-card">
         <div class="player-card-header">
             <div>
-                <span class="player-name">${p.player_name}</span>
+                <a href="/player-dashboard?player=${encodeURIComponent(p.player_name)}" class="player-name-link">
+                    <span class="player-name">${p.player_name}</span>
+                </a>
                 ${captainBadge}
             </div>
             <span class="role-tag role-${roleClass}">${p.role}</span>
