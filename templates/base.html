@@ -4,15 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cric Squad Selector</title>
-    <!-- Use a clean sans-serif font like Inter or Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="nav-logo">Cric Squad Selector</a>
+            <a href="/" class="nav-logo">🏏 Cric Squad Selector</a>
+
+            <!-- Global Player Search -->
+            <div class="nav-search-wrap" id="nav-search-wrap">
+                <input
+                    type="text"
+                    id="nav-player-search"
+                    class="nav-search-input"
+                    placeholder="Search player…"
+                    autocomplete="off"
+                    aria-label="Search player"
+                >
+                <ul class="nav-search-dropdown hidden" id="nav-search-dropdown"></ul>
+            </div>
+
             <div class="nav-links">
+                <a href="/" class="nav-link {% if request.path == '/' %}nav-link-active{% endif %}">Squad Selector</a>
+                <a href="/player-dashboard" class="nav-link {% if request.path == '/player-dashboard' %}nav-link-active{% endif %}">Player Dashboard</a>
                 <!-- Authentication links will go here in Day 5 -->
                 <a href="#" class="nav-link">Login</a>
             </div>
@@ -23,5 +38,8 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    <!-- Global search JS (runs on every page) -->
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>

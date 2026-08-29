@@ -33,6 +33,12 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/player-dashboard")
+def player_dashboard():
+    return render_template("player_dashboard.html")
+
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
