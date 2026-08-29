@@ -799,3 +799,47 @@ body {
     margin: 0 auto;
     line-height: 1.5;
 }
+
+/* ─── Responsive Mobile Layout ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Navbar */
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    .nav-search-wrap {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Grid Layouts */
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .form-grid-charts {
+        grid-template-columns: 1fr;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+    .profile-header-left {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    /* Table scrolling */
+    .table-card {
+        overflow-x: auto;
+    }
+    .history-table {
+        min-width: 500px;
+    }
+}

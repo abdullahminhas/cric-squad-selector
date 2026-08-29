@@ -8,14 +8,18 @@
 
     let debounceTimer;
 
+    const wrap     = document.getElementById('nav-search-wrap');
+
     input.addEventListener('input', () => {
         clearTimeout(debounceTimer);
         const q = input.value.trim();
         if (q.length < 2) {
             dropdown.classList.add('hidden');
             dropdown.innerHTML = '';
+            wrap.classList.remove('search-loading');
             return;
         }
+        wrap.classList.add('search-loading');
         debounceTimer = setTimeout(() => fetchSuggestions(q), 250);
     });
 
@@ -26,6 +30,8 @@
             renderDropdown(data.players || []);
         } catch (_) {
             dropdown.classList.add('hidden');
+        } finally {
+            wrap.classList.remove('search-loading');
         }
     }
 
