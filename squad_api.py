@@ -1,6 +1,9 @@
+import json
 from flask import Blueprint, request, jsonify
+from flask_login import current_user, login_required
 from ml_utils import df
 from ml_utils import generate_squad
+from models import db, SavedSquad
 
 squad_bp = Blueprint("squad_bp", __name__)
 
@@ -104,3 +107,58 @@ def api_player_profile(player_name):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ─── Save Squad ────────────────────────────────────────────────────────────────
+@squad_bp.route("/api/save-squad", methods=["POST"])
+@login_required
+def api_save_squad():
+    """
+    Saves the current generated squad to the logged-in user's account.
+    Body: { format, team, opposition, players: [...] }
+    """
+    data = request.get_json()
+    if not data or not data.get("players") or not data.get("team"):
+        return jsonify({"error": "Missing required squad data"}), 400
+
+    label = f"{data['team']} vs {data.get('opposition', '?')} — {data.get('format', '?')}"
+
+    squad = SavedSquad(
+        user_id      = current_user.id,
+        label        = label,
+        format       = data.get("format", ""),
+        team         = data.get("team", ""),
+        opposition   = data.get("opposition", ""),
+        players_json = json.dumps(data["players"]),
+    )
+    db.session.add(squad)
+    db.session.commit()
+
+    return jsonify({"message": "Squad saved!", "id": squad.id}), 201
+
+
+# ─── Get My Squads ─────────────────────────────────────────────────────────────
+@squad_bp.route("/api/my-squads", methods=["GET"])
+@login_required
+def api_my_squads():
+    """Returns all squads saved by the currently logged-in user."""
+    squads = (
+        SavedSquad.query
+        .filter_by(user_id=current_user.id)
+        .order_by(SavedSquad.created_at.desc())
+        .all()
+    )
+    return jsonify({"squads": [s.to_dict() for s in squads]}), 200
+
+
+# ─── Delete Saved Squad ────────────────────────────────────────────────────────
+@squad_bp.route("/api/saved-squad/<int:squad_id>", methods=["DELETE"])
+@login_required
+def api_delete_squad(squad_id):
+    """Deletes a saved squad owned by the current user."""
+    squad = SavedSquad.query.filter_by(id=squad_id, user_id=current_user.id).first()
+    if not squad:
+        return jsonify({"error": "Squad not found"}), 404
+    db.session.delete(squad)
+    db.session.commit()
+    return jsonify({"message": "Squad deleted"}), 200
