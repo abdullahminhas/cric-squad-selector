@@ -957,10 +957,15 @@ body {
 
 /* ─── Navbar Auth Elements ───────────────────────────────────────────────── */
 .nav-username {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-main);
-    padding: 0.4rem 0.6rem;
+    color: var(--accent-blue);
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    letter-spacing: 0.01em;
+    margin-left: 0.5rem;
 }
 
 .nav-btn {
@@ -978,4 +983,134 @@ body {
 
 .nav-link-logout {
     color: #dc2626 !important;
+}
+
+/* ─── Save Squad Button ──────────────────────────────────────────────────── */
+.save-squad-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0 1rem;
+}
+
+.save-squad-btn {
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.save-squad-btn:hover   { background: #15803d; }
+.save-squad-btn:active  { transform: scale(0.97); }
+.save-squad-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+/* ─── Toast Notifications ────────────────────────────────────────────────── */
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    padding: 0.85rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    z-index: 9999;
+    white-space: nowrap;
+}
+
+.toast-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-success { background: #16a34a; }
+.toast-error   { background: #dc2626; }
+
+/* ─── Saved Squads Page ──────────────────────────────────────────────────── */
+#squads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.saved-squad-card {
+    padding: 1.5rem;
+}
+
+.saved-squad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.saved-squad-label {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.25rem 0;
+}
+
+.saved-squad-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.delete-squad-btn {
+    background: none;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 0.3rem 0.55rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #dc2626;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.delete-squad-btn:hover    { background: #fef2f2; }
+.delete-squad-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.saved-players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem;
+}
+
+.saved-player-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.saved-player-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-main);
+    text-decoration: none;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.saved-player-name:hover { color: var(--accent-blue); text-decoration: underline; }
+
+.role-tag-sm {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    margin-left: auto;
 }

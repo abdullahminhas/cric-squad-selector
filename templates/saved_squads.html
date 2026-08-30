@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <h1 class="page-title">My Saved Squads</h1>
+    <p class="page-subtitle">All your AI-generated squads saved in one place.</p>
+</div>
+
+<!-- Spinner -->
+<div id="squads-spinner" class="spinner-wrap">
+    <div class="spinner"></div>
+    <p class="spinner-text">Loading your squads…</p>
+</div>
+
+<!-- Empty State -->
+<div id="squads-empty" class="empty-state-card card hidden">
+    <div class="empty-state-icon"></div>
+    <h3 class="empty-state-title">No Saved Squads Yet</h3>
+    <p class="empty-state-desc">Generate a squad on the Squad Selector page and click "Save Squad" to store it here.</p>
+    <a href="/" class="auth-btn btn-primary" style="margin-top:1.25rem; width:auto; padding: 0.6rem 1.5rem; text-decoration:none;">Go to Squad Selector</a>
+</div>
+
+<!-- Squads List -->
+<div id="squads-list" class="hidden"></div>
+
+<script src="{{ url_for('static', filename='js/saved_squads.js') }}"></script>
+{% endblock %}

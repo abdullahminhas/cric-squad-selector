@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="nav-logo">🏏 Cric Squad Selector</a>
+            <a href="/" class="nav-logo">Cric Squad Selector</a>
 
             <!-- Global Player Search -->
             <div class="nav-search-wrap" id="nav-search-wrap">
@@ -29,9 +29,10 @@
                 <a href="/" class="nav-link {% if request.path == '/' %}nav-link-active{% endif %}">Squad Selector</a>
                 <a href="/player-dashboard" class="nav-link {% if request.path == '/player-dashboard' %}nav-link-active{% endif %}">Player Dashboard</a>
                 {% if current_user.is_authenticated %}
-                    <span class="nav-username">👤 {{ current_user.username }}</span>
                     <a href="/saved-squads" class="nav-link {% if request.path == '/saved-squads' %}nav-link-active{% endif %}">Saved Squads</a>
                     <a href="/logout" class="nav-link nav-link-logout">Logout</a>
+                    <span class="nav-username">{{ current_user.username }}</span>
+
                 {% else %}
                     <a href="/login" class="nav-link {% if request.path == '/login' %}nav-link-active{% endif %}">Login</a>
                     <a href="/register" class="nav-btn">Register</a>

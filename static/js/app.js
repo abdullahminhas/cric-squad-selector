@@ -110,6 +110,17 @@ document.getElementById('squad-form').addEventListener('submit', async function 
         resultsTitle.textContent = `${format} Squad — ${team} vs ${opposition}`;
         resultsMeta.textContent = `Generated on ${now} · ${data.squad.length} players selected`;
         resultsContainer.innerHTML = renderSquadGroups(data.squad, format);
+
+        // Store current squad data for saving
+        window._currentSquad = { format, team, opposition, players: data.squad };
+
+        // Inject Save Squad button
+        const saveWrap = document.getElementById('save-squad-wrap');
+        if (saveWrap) {
+            saveWrap.innerHTML = `<button id="save-squad-btn" class="save-squad-btn">Save Squad</button>`;
+            document.getElementById('save-squad-btn').addEventListener('click', saveSquad);
+        }
+
         resultsSection.classList.remove('hidden');
 
     } catch (err) {
@@ -234,4 +245,57 @@ function selectionRationale(p) {
     } else {
         return 'Selected by the ML ensemble as the best available option for this combination.';
     }
+}
+
+// ─── Save Squad ───────────────────────────────────────────────────────────────
+async function saveSquad() {
+    const btn = document.getElementById('save-squad-btn');
+    if (!window._currentSquad) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+        const res = await fetch('/api/save-squad', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(window._currentSquad),
+        });
+        const data = await res.json();
+
+        if (res.status === 401) {
+            showToast('Please log in to save a squad.', 'error');
+            setTimeout(() => window.location.href = '/login', 1500);
+        } else if (!res.ok) {
+            showToast(data.error || 'Could not save squad.', 'error');
+        } else {
+            showToast('Squad saved! View it in Saved Squads.', 'success');
+            btn.textContent = 'Saved';
+        }
+    } catch (_) {
+        showToast('Network error. Please try again.', 'error');
+    } finally {
+        if (btn.textContent !== 'Saved') {
+            btn.disabled = false;
+            btn.textContent = 'Save Squad';
+        }
+    }
+}
+
+// ─── Toast Notifications ──────────────────────────────────────────────────────
+function showToast(message, type = 'success') {
+    const existing = document.getElementById('toast-notification');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'toast-notification';
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('toast-visible'));
+    setTimeout(() => {
+        toast.classList.remove('toast-visible');
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
 }

@@ -38,6 +38,11 @@ def player_dashboard():
     return render_template("player_dashboard.html")
 
 
+@app.route("/saved-squads")
+def saved_squads():
+    return render_template("saved_squads.html")
+
+
 
 if __name__ == "__main__":
     with app.app_context():
