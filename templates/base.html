@@ -28,8 +28,14 @@
             <div class="nav-links">
                 <a href="/" class="nav-link {% if request.path == '/' %}nav-link-active{% endif %}">Squad Selector</a>
                 <a href="/player-dashboard" class="nav-link {% if request.path == '/player-dashboard' %}nav-link-active{% endif %}">Player Dashboard</a>
-                <!-- Authentication links will go here in Day 5 -->
-                <a href="#" class="nav-link">Login</a>
+                {% if current_user.is_authenticated %}
+                    <span class="nav-username">👤 {{ current_user.username }}</span>
+                    <a href="/saved-squads" class="nav-link {% if request.path == '/saved-squads' %}nav-link-active{% endif %}">Saved Squads</a>
+                    <a href="/logout" class="nav-link nav-link-logout">Logout</a>
+                {% else %}
+                    <a href="/login" class="nav-link {% if request.path == '/login' %}nav-link-active{% endif %}">Login</a>
+                    <a href="/register" class="nav-btn">Register</a>
+                {% endif %}
             </div>
         </div>
     </nav>
