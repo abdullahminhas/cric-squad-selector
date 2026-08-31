@@ -977,6 +977,7 @@ body {
     font-size: 0.9rem;
     text-decoration: none;
     transition: background 0.2s;
+    margin-left: 1.5rem;
 }
 
 .nav-btn:hover { background: var(--accent-blue-hover); }
