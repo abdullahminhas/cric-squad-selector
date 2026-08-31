@@ -395,8 +395,8 @@ cython_debug/
 #   and can be added to the global gitignore or merged into this file. However, if you prefer, 
 
 # Local project notes and AI handoff context
-PROJECT_CONTEXT.md
-DEVELOPMENT_PLAN.md
+*.md
+!README.md
 
 #   you could uncomment the following to ignore the entire vscode folder
 # .vscode/

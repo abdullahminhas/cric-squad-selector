@@ -120,6 +120,15 @@ function renderProfile(p) {
     roleTag.textContent = role;
     roleTag.className = `role-tag role-${roleClass}`;
 
+    // ML Recommendation badge
+    const mlBadge = document.getElementById('profile-ml-badge');
+    if (p.ml_recommendation) {
+        mlBadge.textContent = `${p.ml_recommendation.label} - ${p.ml_recommendation.score}%`;
+        mlBadge.className = `ml-recommendation-badge ${p.ml_recommendation.css_class}`;
+    } else {
+        mlBadge.classList.add('hidden');
+    }
+
     // Career stats grid
     const statsGrid = document.getElementById('career-stats-grid');
     const stats = [

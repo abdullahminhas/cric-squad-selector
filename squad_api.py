@@ -86,11 +86,36 @@ def api_player_profile(player_name):
         )
         history["date"] = history["date"].astype(str)
 
+        b_avg = round(float(latest.get("career_batting_avg", 0) or 0), 2)
+        bw_avg = round(float(latest.get("career_bowling_avg", 0) or 0), 2)
+        sr = round(float(latest.get("career_strike_rate", 0) or 0), 2)
+        runs_l5 = round(float(latest.get("runs_last5", 0) or 0), 1)
+        runs_l10 = round(float(latest.get("runs_last10", 0) or 0), 1)
+        wkts_l5 = round(float(latest.get("wickets_last5", 0) or 0), 1)
+        wkts_l10 = round(float(latest.get("wickets_last10", 0) or 0), 1)
+
+        # Composite ML Profile Score (out of 100)
+        bat_score = min(b_avg / 50.0, 1.0) * 30           # max 30 pts
+        bowl_score = (min(40.0 / (bw_avg + 0.1), 1.6) / 1.6) * 20 if bw_avg > 0 else 0  # max 20 pts
+        sr_score = min(sr / 150.0, 1.0) * 15              # max 15 pts
+        form_score = min((runs_l5 + runs_l10) / 80.0, 1.0) * 20  # max 20 pts
+        wkt_bonus = min((wkts_l5 + wkts_l10) / 10.0, 1.0) * 15  # max 15 pts
+        ml_score = int(round(min(bat_score + bowl_score + sr_score + form_score + wkt_bonus, 100)))
+
+        if ml_score >= 75:
+            ml_rec = {"label": "Elite Profile", "css_class": "badge-elite", "score": ml_score}
+        elif ml_score >= 55:
+            ml_rec = {"label": "Strong Profile", "css_class": "badge-strong", "score": ml_score}
+        elif ml_score >= 35:
+            ml_rec = {"label": "Average Profile", "css_class": "badge-average", "score": ml_score}
+        else:
+            ml_rec = {"label": "Developing Profile", "css_class": "badge-developing", "score": ml_score}
+
         profile = {
             "player_name":        latest["player_name"],
             "team":               latest["team"],
-            "career_batting_avg": round(float(latest.get("career_batting_avg", 0) or 0), 2),
-            "career_bowling_avg": round(float(latest.get("career_bowling_avg", 0) or 0), 2),
+            "career_batting_avg": b_avg,
+            "career_bowling_avg": bw_avg,
             "career_strike_rate": round(float(latest.get("career_strike_rate", 0) or 0), 2),
             "career_economy":     round(float(latest.get("career_economy", 0) or 0), 2),
             "career_matches":     int(latest.get("career_matches_played", 0) or 0),
@@ -101,6 +126,7 @@ def api_player_profile(player_name):
             "economy_last5":      round(float(latest.get("economy_last5", 0) or 0), 2),
             "economy_last10":     round(float(latest.get("economy_last10", 0) or 0), 2),
             "recent_matches":     history.to_dict(orient="records"),
+            "ml_recommendation":  ml_rec,
         }
 
         return jsonify({"player": profile}), 200
