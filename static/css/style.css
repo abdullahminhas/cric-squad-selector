@@ -800,26 +800,130 @@ body {
     line-height: 1.5;
 }
 
+/* ─── Hamburger Menu Button ──────────────────────────────────────────────────── */
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-main);
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 /* ─── Responsive Mobile Layout ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-    /* Navbar */
+    /* Navbar top row */
     .nav-container {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        align-items: center;
     }
+
+    /* Show hamburger */
+    .nav-hamburger {
+        display: flex;
+        margin-left: auto;
+    }
+
+    /* Search bar goes full-width on its own row */
     .nav-search-wrap {
+        order: 3;
         width: 100%;
         max-width: 100%;
+        flex: none;
     }
-    
-    /* Grid Layouts */
+
+    /* Nav links collapse and show on toggle */
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        order: 4;
+        gap: 0;
+        padding: 0.5rem 0;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .nav-links.nav-open {
+        display: flex;
+    }
+
+    .nav-link,
+    .nav-btn,
+    .nav-link-logout {
+        margin-left: 0;
+        padding: 0.65rem 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.95rem;
+        display: block;
+        width: 100%;
+    }
+
+    .nav-btn {
+        background: none;
+        color: var(--accent-blue) !important;
+        border-radius: 0;
+        text-align: left;
+    }
+
+    .nav-username {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        display: inline-block;
+    }
+
+    /* Page layout */
+    .container {
+        margin: 1.25rem auto;
+        padding: 0 1rem;
+    }
+
+    /* Page header */
+    .page-title {
+        font-size: 1.4rem;
+    }
+
+    /* Form card */
+    .form-card {
+        max-width: 100%;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
+
+    /* Player cards */
+    .player-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .player-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* Dashboard stats */
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    /* Charts stack */
     .form-grid-charts {
         grid-template-columns: 1fr;
     }
@@ -830,17 +934,72 @@ body {
         text-align: center;
         align-items: center;
     }
+
     .profile-header-left {
         flex-direction: column;
+        align-items: center;
         text-align: center;
     }
-    
+
+    .profile-name {
+        font-size: 1.2rem;
+    }
+
     /* Table scrolling */
     .table-card {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
+
     .history-table {
         min-width: 500px;
+    }
+
+    /* Saved squads players grid */
+    .saved-players-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* Auth pages */
+    .auth-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    /* Save squad button */
+    .save-squad-wrap {
+        margin: 1.5rem 0 0.75rem;
+    }
+
+    .save-squad-btn {
+        width: 100%;
+    }
+
+    /* Toast - avoid overflow on small screens */
+    .toast {
+        white-space: normal;
+        text-align: center;
+        width: 90%;
+        left: 5%;
+        transform: translateY(80px);
+    }
+
+    .toast-visible {
+        transform: translateY(0);
+    }
+}
+
+/* ─── Extra small screens (phones < 400px) ──────────────────────────────────── */
+@media (max-width: 400px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .saved-players-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card-value {
+        font-size: 1.3rem;
     }
 }
 

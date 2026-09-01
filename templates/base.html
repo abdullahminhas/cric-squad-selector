@@ -9,8 +9,11 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-container">
+        <div class="nav-container" id="nav-container">
             <a href="/" class="nav-logo">Cric Squad Selector</a>
+            <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
 
             <!-- Global Player Search -->
             <div class="nav-search-wrap" id="nav-search-wrap">
@@ -48,5 +51,18 @@
 
     <!-- Global search JS (runs on every page) -->
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script>
+        (function() {
+            var btn = document.getElementById('nav-hamburger');
+            var links = document.querySelector('.nav-links');
+            if (btn && links) {
+                btn.addEventListener('click', function() {
+                    var isOpen = links.classList.toggle('nav-open');
+                    btn.classList.toggle('open', isOpen);
+                    btn.setAttribute('aria-expanded', isOpen);
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
